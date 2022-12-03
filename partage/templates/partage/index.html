@@ -58,7 +58,7 @@
             Tags :
             {% for letag in texte.tag.all %}
             <a class="text-sm px-1 py-[2px] rounded-md bg-emerald-400 hover:bg-emerald-500 transition-all text-white"
-                href="/partage/{{ letag }}/contenus/"><span>{{ letag }}</span></a>
+                href="/partage/{{ letag }}/contenus/">{{ letag }}</a>
             {% endfor %}
         </div>
         <div class="w-fit mx-auto">

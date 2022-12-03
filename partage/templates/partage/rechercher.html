@@ -9,8 +9,8 @@
         <h1 class="font-bold text-5xl text-gray-800 leading-none">Trouvez votre bonheur parmi nos milliers de ressources
             disponibles</h1>
 
-        <form class="mt-10">
-            <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only">Rechercher</label>
+        <form class="mt-10" onsubmit="event.preventDefault(); envoyer();">
+            <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only">Rechercher</label>
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
@@ -19,81 +19,88 @@
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                <input type="search" id="search"
+                <input id="search"
                     class="block w-full p-4 pl-10 text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-emerald-400 focus:border-emerald-400 "
                     placeholder="Tapez votre recherche..." value="{% if sentence %}{{ sentence }}{% endif %}" required>
-                <button onclick="envoyer()"
+                <button id="searchButton" type="submit"
                     class="text-white absolute right-1.5 bottom-1.5 bg-emerald-400 hover:bg-emerald-500 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-full px-4 py-3 ">Rechercher</button>
             </div>
         </form>
+        {% if tracker %}
+        <p class="text-center mt-2 font-medium text-gray-700">Votre recherche représente <span
+                class="font-bold text-emerald-400">
+                {{ tracker }}</span> kg eq/CO<sub>2</sub>!</p>
+        {% endif %}
+    </div>
 
-        {% if tab_content %}
-        <div class="card">
-            <div class="card-body">
-                {% for dist in distance %}
-                {% for c in tab_content %}
-                {% if forloop.counter == forloop.parentloop.counter %}
-                <div class="card">
-                    <div class="card-body">
-                        {% if c in content_http_list %}
-                        <h5 class="card-title"><a href="/partage/sources/{{ c.source }}"
-                                style="text-decoration: none; color: black;">{{ c.source }}</a>
-                            <a href="{{ c.location }}" target="_blank" style="color: black;"><button type="button"
-                                    class="btn">
-                                    lien</button></a>
-                        </h5>
-                        {% else %}
-                        <h5 class="card-title"><a href="/partage/sources/{{ c.source }}"
-                                style="text-decoration: none; color: black;">{{ c.source }}</a>
-                            <button type="button" class="btn" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="{{ c.location }}">
-                                Marque page</button>
-                        </h5>
-                        {% endif %}
-                        <h6 class="card-subtitle text-muted mb-2">
-                            {% for author in c.source.auteur.all %}
-                            <a href="/partage/author/{{ author }}"><span class="badge text-bg-light">{{ author
-                                    }}</span></a>
-                            {% endfor %}
+    {% if tab_content %}
 
-                        </h6>
-                        <p class="card-text">{{ c.text|linebreaks }}</p>
-                        <div id="tags">
-                            {% for letag in c.tag.all %}
-                            <a href="/partage/{{ letag }}/contenus/"><span class="badge text-bg-success">{{ letag
-                                    }}</span></a>
-                            {% endfor %}
-                        </div>
-                        <br>
-                        <a href="/../admin/partage/content/{{ c.id }}/change/" target="_blank"><svg
-                                style="color: black;" xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-                                fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                <path
-                                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                <path fill-rule="evenodd"
-                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
-                            </svg></a></p>
-                    </div>
-                </div><br>
-                {% endif %}
-                {% endfor %}
+    {% for dist in distance %}
+    {% for c in tab_content %}
+    {% if forloop.counter == forloop.parentloop.counter %}
+    <div class="bg-white rounded-2xl px-6 py-4 shadow-3xl my-10">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <a class="text-2xl text-gray-800 font-medium block w-fit" href="/partage/sources/{{ c.source }}">
+                    {{c.source }}</a>
+                <p>|</p>
+                {% for author in c.source.auteur.all %}
+                <a class="text-sm px-1 py-[2px] rounded-md bg-gray-100 hover:bg-gray-200 transition-all"
+                    href="/partage/author/{{ author }}">
+                    {{ author }}</a>
                 {% endfor %}
             </div>
+
+            <ul class="flex gap-5 text-2xl">
+                {% if c in content_http_list %}
+                <li>
+                    <a href="/partage/sources/{{ c.source }}">
+                        <i
+                            class="bi bi-link-45deg text-gray-700 hover:!text-cyan-400 transition-all cursor-pointer"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li title="{{ c.source }}" class="text-gray-700 hover:text-blue-400 transition-all cursor-pointer">
+                    <a href="/partage/sources/{{ c.source }}">
+                        <i class="bi bi-info-circle-fill"></i>
+                    </a>
+                </li>
+                {% endif %}
+                <li><a href="/../admin/partage/content/{{ c.id }}/change/" target="_blank">
+                        <i class="bi bi-pen-fill text-gray-700 hover:text-yellow-400 transition-all cursor-pointer"></i>
+                    </a></li>
+                <li class="text-gray-700 hover:text-red-400 transition-all cursor-pointer"><i
+                        class="bi bi-clipboard-check"></i></li>
+            </ul>
         </div>
-        {% endif %}
+        <p class="py-2">{{ c.text|linebreaks }}</p>
+
+        <div class="flex gap-2 mt-2">
+            Tags :
+            {% for letag in c.tag.all %}
+            <a class="text-sm px-1 py-[2px] rounded-md bg-emerald-400 hover:bg-emerald-500 transition-all text-white"
+                href="/partage/{{ letag }}/contenus/">
+                {{ letag }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
 </section>
 <script>
-    function envoyer() {
-        var sentence = document.getElementById('search').value
-        var url = '/partage/rechercher/' + sentence
-        window.location = url
-    }
-    var button = document.getElementById("bouton");
-    var textBox = document.getElementById("search");
+    const button = document.querySelector("#searchButton");
+    const textBox = document.querySelector("#search");
     textBox.addEventListener("keyup", function (event) {
         if (event.keyCode == 13) {
             button.click();
         }
     });
+    function envoyer() {
+        const sentence = textBox.value
+        const url = '/partage/rechercher/' + sentence
+        window.location = url
+    }
 </script>
 {% endblock %}

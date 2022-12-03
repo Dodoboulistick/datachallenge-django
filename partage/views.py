@@ -16,6 +16,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 import umap
 from django.template import RequestContext
+from codecarbon import EmissionsTracker
 
 fasttext.FastText.eprint = lambda x: None
 
@@ -336,6 +337,8 @@ def rechercher(request):
 
 ## rechercheSentence() permet d'afficher les résultats de la recherche
 def rechercheSentence(request, sentence):
+    tracker = EmissionsTracker()
+    tracker.start()
     content_list = Content.objects.all() # liste de tous les contenus
     content_http_list = Content.objects.filter(location__startswith="http") # liste de tous les contenus provenant de sites internet
     # On charge tous les contenus que l'on met dans la variable contents
@@ -355,6 +358,7 @@ def rechercheSentence(request, sentence):
         'content_list': content_list,
         'content_http_list': content_http_list,
         'distance': distances,
+        'tracker': "{:.4e}".format(tracker.stop())
     }
     return render(request, 'partage/rechercher.html', context)
 
