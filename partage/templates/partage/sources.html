@@ -6,9 +6,9 @@
 
 {% if allsources %}
 <section class="py-14">
-    <h1 class="text-5xl text-center font-bold text-gray-800 pb-7">Nos sources</h1>
+    <h1 class="text-5xl text-center font-bold text-gray-800 pb-16">Nos sources</h1>
     {% if source_list %}
-    <ul>
+    <ul class="w-3/4 mx-auto">
         {% for source in source_list %}
         <li class="list-disc py-2"><a class="hover:text-emerald-400 transition-all duration-300 font-bold text-xl"
                 href="/partage/sources/{{ source }}">
@@ -16,7 +16,7 @@
             </a>
             <p>Auteurs :
                 {% for auteur in source.auteur.all %}
-                <a class="bg-emerald-200/40 py-[2px] px-1 rounded-md text-sm font-medium"
+                <a class="bg-emerald-400 py-[2px] px-1 rounded-md text-sm font-medium text-white"
                     href="/partage/author/{{ auteur }}">
                     {{ auteur }}</a>
                 {% endfor %}

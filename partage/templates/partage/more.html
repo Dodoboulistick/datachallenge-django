@@ -5,9 +5,10 @@
 {% block content %}
 
 {% if sujet == "leProjet" %}
-<section class="flex flex-col pt-14 gap-14">
+<section class="flex flex-col py-10 gap-10">
+    <h1 class="text-5xl text-center font-bold text-gray-800">A propos</h1>
     <div>
-        <h3 class="font-bold text-3xl pb-3 text-gray-800">Le <span class="text-emerald-400">projet</span></h3>
+        <h3 class="font-bold text-3xl pb-3 text-gray-800">Le projet</h3>
         <p>
             la-derniere-bibliotheque.org est un site de sensibilisation et d'apprentissage
             sur les problèmes écologiques actuels. Grâce à notre base de données encore en
@@ -26,7 +27,7 @@
     </div>
 
     <div>
-        <h3 class="font-bold text-3xl pb-3 text-gray-800">Comment <span class="text-emerald-400">participer</span> ?
+        <h3 class="font-bold text-3xl pb-3 text-gray-800">Comment participer ?
         </h3>
         <p>
             Actuellement notre base de données compte {{ content_list.count }} contenus. L'objectif est
@@ -40,7 +41,7 @@
     </div>
 
     <div>
-        <h3 class="font-bold text-3xl pb-3 text-gray-800">Qui sommes-<span class="text-emerald-400">nous</span> ?</h3>
+        <h3 class="font-bold text-3xl pb-3 text-gray-800">Qui sommes-nous ?</h3>
         <p>
             L'équipe GreenAI UPPA est un laboratoire engagé qui améliore les algorithmes
             d'apprentissage automatique de pointe. Soucieux de notre impact sur la

@@ -3,14 +3,23 @@
 {% block title %}Accueil{% endblock %}
 
 {% block content %}
-<section class="container">
-    <div class="py-20 text-center w-3/4 mx-auto">
+<section class="container py-20">
+    <div class="pb-10 text-center w-3/4 mx-auto">
         <h3 class="text-2xl font-medium text-emerald-400 uppercase tracking-[1em] mb-2">Green AI</h3>
         <h1 class="font-bold text-5xl text-gray-800 leading-none">Maintenez votre base de connaissances sur les enjeux
             environnementaux contemporains</h1>
+        <div class="flex justify-center gap-10 mt-10">
+            <a href="/partage/more/leProjet/"
+                class="bg-emerald-400 rounded-lg py-3 px-5 text-xl block w-fit text-white shadow-3xl hover:bg-emerald-500 transition-all"><i
+                    class="bi bi-boxes"></i>
+                Découvrir</a>
+            <a href="/partage/rechercher/"
+                class="bg-white rounded-lg py-3 px-5 text-xl block w-fit shadow-3xl hover:bg-gray-200 transition-all"><i
+                    class="bi bi-search"></i> Rechercher</a>
+        </div>
     </div>
 
-    <div class="bg-white rounded-2xl px-5 py-3">
+    <div class="bg-white rounded-2xl px-6 py-4 shadow-3xl">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <a class="text-2xl text-gray-800 font-medium block w-fit" href="/partage/sources/{{ texte.source }}">
@@ -48,17 +57,18 @@
         <div class="flex gap-2 mt-2">
             Tags :
             {% for letag in texte.tag.all %}
-            <a class="text-sm px-1 py-[2px] rounded-md bg-emerald-400 hover:bg-emerald-500 transition-all"
+            <a class="text-sm px-1 py-[2px] rounded-md bg-emerald-400 hover:bg-emerald-500 transition-all text-white"
                 href="/partage/{{ letag }}/contenus/"><span>{{ letag }}</span></a>
             {% endfor %}
         </div>
+        <div class="w-fit mx-auto">
+            <button id="button_pre" type="button" class="btn btn-secondary" onclick="history.back()"><i
+                    class="bi bi-arrow-left font-bold text-2xl"></i></button>
+            <a href="/partage/next/{{ content_id_suivant }}"><i class="bi bi-arrow-right font-bold text-2xl"></i></a>
+        </div>
     </div>
 
-    <div>
-        <button id="button_pre" type="button" class="btn btn-secondary" onclick="history.back()">Précédent</button>
-        <a href="/partage/next/{{ content_id_suivant }}"><button type="button" class="btn btn-secondary">Plus de
-                contenus</button></a>
-    </div>
+
     {% endif %}
 </section>
 <script>
