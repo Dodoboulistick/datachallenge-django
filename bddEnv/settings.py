@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'simple_history',
+    'tailwind',
+    'theme'
 ]
 
 MIDDLEWARE = [
@@ -142,3 +144,10 @@ SERVER_EMAIL = 'contact@la-derniere-bibliotheque.org'
 
 # CSRF_TRUSTED_ORIGINS = ['https://*.la-derniere-bibliotheque.org','https://*.127.0.0.1']
 
+TAILWIND_APP_NAME = 'theme'
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+NPM_BIN_PATH = 'C:\\Program Files\\nodejs\\npm.cmd'
