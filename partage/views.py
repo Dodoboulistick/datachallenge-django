@@ -48,7 +48,6 @@ data_y = []
 data_x.append(contenu_plan[:,0])
 data_y.append(contenu_plan[:,1])
 init_impact = tracker_init.stop()
-print(init_impact)
 ################################################
 
 ## index() et next() renvoient tous les deux sur la même page html
@@ -563,3 +562,22 @@ def envoyer2(request):
         'pseudo_score': pseudo_score,
     }
     return render(request, 'partage/jouer2.html', context)
+
+
+## simulation() permet d'afficher la simulation de la diffusion d'un contenu
+
+def simulation(request):  
+    context = {
+        'tag_list': tag_list,
+    }
+    return render(request, 'partage/simulation.html', context)
+
+def simulation_results(request, content):
+    tracker_simu = EmissionsTracker()
+
+    context = {
+        'tag_list': tag_list,
+        'content': content,
+        'tracker': "{:.4e}".format(tracker_simu.stop())
+    }
+    return render(request, 'partage/simulation.html', context)

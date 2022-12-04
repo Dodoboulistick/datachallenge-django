@@ -20,4 +20,6 @@ urlpatterns = [
     path('envoyer/', views.envoyer, name="envoyer"),
     path('jouer2/', views.jouer2, name="jouer2"),
     path('envoyer2/', views.envoyer2, name="envoyer2"),
+    path('simulation/', views.simulation, name="simulation"),
+    path('simulation/<str:content>', views.simulation_results, name="simulation_results")
 ]
