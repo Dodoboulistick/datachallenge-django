@@ -47,6 +47,11 @@
                 class="text-white absolute right-1.5 bottom-1.5 bg-emerald-400 hover:bg-emerald-500 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-full px-4 py-3 ">Rechercher</button>
         </div>
     </form>
+    {% if tracker %}
+    <p class="text-center mt-2 font-medium text-gray-700">{{ nb_results }} résultats trouvés, pour une consommation
+        de <span class="font-bold text-emerald-400">
+            {{ tracker }}</span> kg eq/CO<sub>2</sub>!</p>
+    {% endif %}
 
     {% for dist in distance %}
     {% for c in tab_content %}

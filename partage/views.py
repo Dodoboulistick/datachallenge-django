@@ -24,14 +24,14 @@ fasttext.FastText.eprint = lambda x: None
 content_list = Content.objects.all() # liste de tous les contenus
 ###############################################
 
-
+FLAUBERT = "flaubert/flaubert_small_cased"
 
 ############ Construction du graphe index.html ############
-def all_vectors_content(model):
+def all_vectors_content(tokenizer, model):
     matrice =[]
     # on vectorise chaque contenu et on les insère dans une matrice
     for i in range(Content.objects.count()):
-        vec = recherche.embedding(content_list[i].text, model)
+        vec = recherche.flaubert_sentence_embedding(content_list[i].text, tokenizer, model)
         matrice.append(vec)
     return matrice
 
@@ -39,8 +39,9 @@ def all_vectors_content(model):
 # grâce à umap et on stocke dans des variables
 tracker_init = EmissionsTracker()
 tracker_init.start()
-model = fasttext.load_model('models/model2.bin')
-mat = all_vectors_content(model)
+tokenizer_flaubert, model_flaubert = recherche.load_flaubert(FLAUBERT)
+mat = all_vectors_content(tokenizer_flaubert, model_flaubert)
+embedded_contents = json.load(open('embedded_contents.json', 'r'))
 contenu_plan = umap.UMAP(n_neighbors=4).fit_transform(mat)
 contenu_plan = np.array(contenu_plan)
 data_x = []
@@ -127,6 +128,8 @@ def tags(request):
 ## add_tags() permet d'afficher tous les tags selon un mot-clé
 
 def add_tag(request, tag):
+    tracker_tag = EmissionsTracker()
+    tracker_tag.start()
     content_list = Content.objects.all() # liste de tous les contenus
     content_http_list = Content.objects.filter(location__startswith="http") # liste de tous les contenus provenant de sites internet
     # On charge tous les contenus que l'on met dans la variable contents
@@ -134,7 +137,7 @@ def add_tag(request, tag):
         data = json.load(json_file)
     contents = data['Content']
     n_voisin = 5 # nombre de voisins les plus proches à afficher
-    tab = recherche.voisins_sentence(tag, contents, model, n_voisin) # on utilise la fonction voisins_tag()
+    tab = recherche.flaubert_neighbours(tag, embedded_contents, contents, tokenizer_flaubert,  model_flaubert, n_voisin) # on utilise la fonction voisins_tag()
     distances = tab[1][0] # on récupère les distances entre les voisins et la phrase de départ
     # on récupère les plus proches voisins dans tab_content
     tab_content = []
@@ -146,6 +149,8 @@ def add_tag(request, tag):
         'content_list': content_list,
         'content_http_list': content_http_list,
         'distance': distances,
+        'tracker':  "{:.4e}".format(tracker_tag.stop()),
+        'nb_results': len(tab_content)
     }
     return render(request, 'partage/tags.html', context)
 
@@ -376,7 +381,7 @@ def rechercheSentence(request, sentence):
         data = json.load(json_file)
     contents = data['Content']
     n_voisin = 5 # nombre de voisins les plus proches à afficher
-    tab = recherche.voisins_sentence(sentence, contents, model, n_voisin) # on utilise la fonction voisins_sentence()
+    tab = recherche.flaubert_neighbours(sentence, embedded_contents, contents, tokenizer_flaubert,  model_flaubert, n_voisin) # on utilise la fonction voisins_sentence()
     distances = tab[1][0] # on récupère les distances entre les voisins et la phrase de départ
     # on récupère les plus proches voisins dans tab_content
     tab_content = []
@@ -388,7 +393,8 @@ def rechercheSentence(request, sentence):
         'content_list': content_list,
         'content_http_list': content_http_list,
         'distance': distances,
-        'tracker': "{:.4e}".format(tracker.stop())
+        'tracker': "{:.4e}".format(tracker.stop()),
+        'nb_results': len(tab_content)
     }
     return render(request, 'partage/rechercher.html', context)
 
@@ -574,6 +580,7 @@ def simulation(request):
 
 def simulation_results(request, content):
     tracker_simu = EmissionsTracker()
+    tracker_simu.start()
 
     context = {
         'tag_list': tag_list,
