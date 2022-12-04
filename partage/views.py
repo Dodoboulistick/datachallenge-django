@@ -37,6 +37,8 @@ def all_vectors_content(model):
 
 # on charge le modèle, on effectue une réduction des vecteurs 
 # grâce à umap et on stocke dans des variables
+tracker_init = EmissionsTracker()
+tracker_init.start()
 model = fasttext.load_model('models/model2.bin')
 mat = all_vectors_content(model)
 contenu_plan = umap.UMAP(n_neighbors=4).fit_transform(mat)
@@ -45,6 +47,8 @@ data_x = []
 data_y = []
 data_x.append(contenu_plan[:,0])
 data_y.append(contenu_plan[:,1])
+init_impact = tracker_init.stop()
+print(init_impact)
 ################################################
 
 ## index() et next() renvoient tous les deux sur la même page html
@@ -71,7 +75,8 @@ def index(request):
         'source_list': source_list,
         'data_x': data_x,
         'data_y': data_y,
-        'var_reconnaissance': var_reconnaissance
+        'var_reconnaissance': var_reconnaissance,
+        'init_impact': "{:.4e}".format(init_impact)
     }
     return render(request, 'partage/index.html', context)
 
@@ -114,8 +119,34 @@ for tag in tag_list:
 
 def tags(request):  
     context = {
+        'show_chart': True,
         'tag_list': tag_list,
         'occurence_tag': occurence_tag,
+    }
+    return render(request, 'partage/tags.html', context)
+
+## add_tags() permet d'afficher tous les tags selon un mot-clé
+
+def add_tag(request, tag):
+    content_list = Content.objects.all() # liste de tous les contenus
+    content_http_list = Content.objects.filter(location__startswith="http") # liste de tous les contenus provenant de sites internet
+    # On charge tous les contenus que l'on met dans la variable contents
+    with open('partage/data.json', 'r') as json_file:
+        data = json.load(json_file)
+    contents = data['Content']
+    n_voisin = 5 # nombre de voisins les plus proches à afficher
+    tab = recherche.voisins_sentence(tag, contents, model, n_voisin) # on utilise la fonction voisins_tag()
+    distances = tab[1][0] # on récupère les distances entre les voisins et la phrase de départ
+    # on récupère les plus proches voisins dans tab_content
+    tab_content = []
+    for i in tab[0]:
+        tab_content.append(content_list[int(i)])
+    context = {
+        'tag': tag,
+        'tab_content': tab_content,
+        'content_list': content_list,
+        'content_http_list': content_http_list,
+        'distance': distances,
     }
     return render(request, 'partage/tags.html', context)
 

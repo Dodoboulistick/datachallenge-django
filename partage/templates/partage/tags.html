@@ -8,6 +8,7 @@
 <script type="text/javascript" src="https://unpkg.com/c3@0.7.20/c3.js"></script>
 
 <section class="py-20">
+    {% if show_chart %}
     <h1 class="text-5xl text-center font-bold text-gray-800 mb-2">Liste des tags</h1>
     <h2 class="text-xl text-gray-600 text-center">Survolez un tag pour le situer sur le diagramme en barre</h2>
     <hr class="h-[1px] w-1/2 mx-auto my-5 bg-gray-800/60 border-none" />
@@ -23,8 +24,82 @@
     </div>
     <h3 class="font-semibold mt-3">Graphe des occurences des tags</h3>
     <div id="bar-chart"></div>
+    {% endif %}
+
+    <h1 class="text-5xl text-center font-bold text-gray-800 mb-2 mt-8">Ajouter un tag</h1>
+    <h2 class="text-xl text-gray-600 text-center">Observez les contenus pour lesquels votre nouveau tag est cohérent
+    </h2>
+    <hr class="h-[1px] w-1/2 mx-auto my-5 bg-gray-800/60 border-none" />
+    <form class="mt-10 w-2/3 mx-auto" onsubmit="event.preventDefault(); envoyer();">
+        <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only">Rechercher</label>
+        <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <input id="search"
+                class="block w-full p-4 pl-10 text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-emerald-400 focus:border-emerald-400 "
+                placeholder="Entrez votre tag..." value="{% if tag %}{{ tag }}{% endif %}" required>
+            <button id="searchButton" type="submit"
+                class="text-white absolute right-1.5 bottom-1.5 bg-emerald-400 hover:bg-emerald-500 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-full px-4 py-3 ">Rechercher</button>
+        </div>
+    </form>
+
+    {% for dist in distance %}
+    {% for c in tab_content %}
+    {% if forloop.counter == forloop.parentloop.counter %}
+    <div class="bg-white rounded-2xl px-6 py-4 shadow-3xl my-10">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <a class="text-2xl text-gray-800 font-medium block w-fit" href="/partage/sources/{{ c.source }}">
+                    {{c.source }}</a>
+                <p>|</p>
+                {% for author in c.source.auteur.all %}
+                <a class="text-sm px-1 py-[2px] rounded-md bg-gray-100 hover:bg-gray-200 transition-all"
+                    href="/partage/author/{{ author }}">
+                    {{ author }}</a>
+                {% endfor %}
+            </div>
+
+            <ul class="flex gap-5 text-2xl">
+                {% if c in content_http_list %}
+                <li>
+                    <a href="/partage/sources/{{ c.source }}">
+                        <i
+                            class="bi bi-link-45deg text-gray-700 hover:!text-cyan-400 transition-all cursor-pointer"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li title="{{ c.source }}" class="text-gray-700 hover:text-blue-400 transition-all cursor-pointer">
+                    <a href="/partage/sources/{{ c.source }}">
+                        <i class="bi bi-info-circle-fill"></i>
+                    </a>
+                </li>
+                {% endif %}
+                <li><a href="/../admin/partage/content/{{ c.id }}/change/" target="_blank">
+                        <i class="bi bi-pen-fill text-gray-700 hover:text-yellow-400 transition-all cursor-pointer"></i>
+                    </a></li>
+                <li class="text-gray-700 hover:text-red-400 transition-all cursor-pointer"><i
+                        class="bi bi-clipboard-check"></i></li>
+            </ul>
+        </div>
+        <p class="py-2">{{ c.text|linebreaks }}</p>
+
+        <div class="flex gap-2 mt-2">
+            Tags :
+            {% for letag in c.tag.all %}
+            <a class="text-sm px-1 py-[2px] rounded-md bg-emerald-400 hover:bg-emerald-500 transition-all text-white"
+                href="/partage/{{ letag }}/contenus/">
+                {{ letag }}</a>
+            {% endfor %}
+        </div>
     </div>
-    </div>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
 </section>
 
 
@@ -130,6 +205,13 @@
             }
         }
     }, false);
+
+    const envoyer = () => {
+        const textBox = document.querySelector("#search");
+        const tag = textBox.value
+        const url = '/partage/tags/' + tag
+        window.location = url
+    }
 </script>
 
 {% endblock %}

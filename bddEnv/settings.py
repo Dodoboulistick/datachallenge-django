@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'simple_history',
     'tailwind',
-    'theme'
+    'theme',
+    'admin_extra_buttons'
 ]
 
 MIDDLEWARE = [

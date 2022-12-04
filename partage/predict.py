@@ -8,7 +8,7 @@ PATH = '/'
 
 #one hot encoding of data keywords is known key words 
 def encode(keywords: list):
-    data = pd.read_csv('./../col.csv',index_col='Unnamed: 0')
+    data = pd.read_csv('./col.csv',index_col='Unnamed: 0')
     data.columns = ['keywords']
     new_data = []
     new_data = data['keywords'].isin(keywords).astype(int)
@@ -28,7 +28,7 @@ def get_index(array : list):
   
 def prediction(keywords : list):
   #load model
-  loaded_model = pickle.load(open('./../models/knn_model.sav','rb'))
+  loaded_model = pickle.load(open('./models/knn_model.sav','rb'))
   #encode keywords
   data = encode(keywords)
   #reshape the endoded keywords vector
@@ -48,4 +48,3 @@ def prediction(keywords : list):
 
   return(classes)
   
-print(prediction(['énergie','mouvement','co2']))
